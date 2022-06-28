@@ -1,49 +1,73 @@
 import { createStore } from 'vuex'
-
-// 模块A
-const moduleA = {
-  state: {
-    username: 'ma'
-  },
-  getters: {
-    newName (state) {
-      return state.username + '123'
-    }
-
-  }
-}
-// 模块B
-const moduleB = {
-  namespaced: true,
-  state: {
-    username: 'mb'
-  },
-  getters: {
-    newName (state) {
-      return state.username + '456'
-    }
-  },
-  mutations: {
-    updateName (state) {
-      state.username = 'asdausiogdhuiga'
-    }
-  },
-  actions: {
-    updateName (ctx) {
-      setTimeout(() => {
-        ctx.commit('updateName')
-      }, 1000)
-    }
-  }
-}
+import createPersistedstate from 'vuex-persistedstate'
+// 三个模块
+import cart from './modules/cart'
+import category from './modules/category'
+import user from './modules/user'
 
 export default createStore({
   modules: {
-    moduleA,
-    moduleB
-  }
+    cart,
+    category,
+    user
+  },
+  // 配置插件
+  plugins: [
+    createPersistedstate({
+      // 本地存储名字
+      key: 'erabbit-client-pc-store',
+      // 指定需要存储的模块
+      paths: ['user', 'cart']
+    })
+  ]
 })
 
+// 这个是分模块的用法
+// // 模块A
+// const moduleA = {
+//   state: {
+//     username: 'ma'
+//   },
+//   getters: {
+//     newName (state) {
+//       return state.username + '123'
+//     }
+
+//   }
+// }
+// // 模块B
+// const moduleB = {
+//   namespaced: true,
+//   state: {
+//     username: 'mb'
+//   },
+//   getters: {
+//     newName (state) {
+//       return state.username + '456'
+//     }
+//   },
+//   mutations: {
+//     updateName (state) {
+//       state.username = 'asdausiogdhuiga'
+//     }
+//   },
+//   actions: {
+//     updateName (ctx) {
+//       setTimeout(() => {
+//         ctx.commit('updateName')
+//       }, 1000)
+//     }
+//   }
+// }
+
+// export default createStore({
+//   modules: {
+//     moduleA,
+//     moduleB
+//   }
+// })
+
+/// /// 这个没有分模块
 // vue2.0 创建仓库 new VueX.store({})
 // vue3.0 创建仓库 createStore({})
 // export default createStore({
