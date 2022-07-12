@@ -78,6 +78,7 @@ export default {
 
 //二级类目弹层
 .layer {
+  z-index: 100;
   &.open{
     height: 132px;
     opacity: 1;
