@@ -4,7 +4,9 @@
       <!-- 面包屑 -->
       <XtxBread>
         <XtxBreadItem to="/">首页</XtxBreadItem>
-        <XtxBreadItem>{{topCategory.name}}</XtxBreadItem>
+        <Transition name="fade-right" mode="out-in">
+        <XtxBreadItem :key="topCategory.id">{{topCategory.name}}</XtxBreadItem>
+        </Transition>
       </XtxBread>
       <!-- 轮播图 -->
       <XtxCarousel autoPlay :sliders="sliders" style="height:500px" />
@@ -83,6 +85,22 @@ export default {
 }
 </script>
 <style scoped lang="less">
+// 面包屑动画
+// 进入: 右侧20px的位移,透明度为0 做过渡0.5s   来到本来的位置 没有位移 透明度为1
+// 离开: 起始位置 本来的位置 透明度为1 => 右侧20px的位移,透明度为0 做过渡0.5s
+.fade-right-enter-from, .fade-right-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.fade-right-enter-active, .fade-right-leave-active{
+  transition: all 1s;
+}
+
+.fade-right-enter-to,  .fade-right-leave-from {
+  transform: none;
+  opacity: 1;
+}
 .top-category {
   h3 {
     font-size: 28px;
