@@ -21,7 +21,7 @@ export default {
     // 1.使用props接受modelValue
     // 2.使用useVModel来包装props中的modelValue属性数据
     // 3.在使用checked.value就是使用父组件数据
-    // 4.在使用checked.value = '数据' 赋值, 触发emit('update:modelValue','数据')函数
+    // 4.在使用checked.value = '数据' 赋值, 触发emit('update:modelValue','数据 ')函数
     const checked = useVModel(props, 'modelValue', emit)
     const changeChecked = () => {
       // 通知父组件
