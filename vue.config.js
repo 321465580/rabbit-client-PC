@@ -1,6 +1,6 @@
-const { defineConfig } = require('@vue/cli-service')
+// const { defineConfig } = require('@vue/cli-service')
 
-module.exports = defineConfig({
+module.exports = {
   pluginOptions: {
     'style-resources-loader': {
       preProcessor: 'less',
@@ -9,4 +9,4 @@ module.exports = defineConfig({
       ]
     }
   }
-})
+}
