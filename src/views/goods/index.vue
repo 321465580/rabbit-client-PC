@@ -16,6 +16,8 @@
         </div>
         <div class="spec">
             <GoodsName :goods="goods" />
+            <!-- sku规格组件 -->
+            <GoodsSku :goods="goods" />
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -41,6 +43,7 @@ import GoodsRelevant from './components/goods-relevant'
 import GoodsImage from './components/goods-images'
 import GoodsSales from './components/goods-sales.vue'
 import GoodsName from './components/goods-name'
+import GoodsSku from './components/goods-sku'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
 export default {
@@ -49,7 +52,8 @@ export default {
     GoodsRelevant,
     GoodsImage,
     GoodsSales,
-    GoodsName
+    GoodsName,
+    GoodsSku
   },
   setup () {
     // 1.获取商品详情,去渲染面包屑
