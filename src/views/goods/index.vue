@@ -17,7 +17,7 @@
         <div class="spec">
             <GoodsName :goods="goods" />
             <!-- sku规格组件 -->
-            <GoodsSku :goods="goods" />
+            <GoodsSku :goods="goods" :skuID="3678188" @change="changeSku"/>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -58,7 +58,15 @@ export default {
   setup () {
     // 1.获取商品详情,去渲染面包屑
     const goods = useGoods()
-    return { goods }
+    const changeSku = (sku) => {
+      // 修改商品现价 原价库存信息
+      if (sku.skuId) {
+        goods.value.price = sku.price
+        goods.value.oldPrice = sku.oldPrice
+        goods.value.inventory = sku.inventory
+      }
+    }
+    return { goods, changeSku }
   }
 }
 // 获取商品详情

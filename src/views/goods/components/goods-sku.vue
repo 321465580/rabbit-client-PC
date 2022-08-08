@@ -80,16 +80,35 @@ const updateDisabledStatus = (specs, pathMap) => {
   })
 }
 
+// 初始化选中状态 默认选中
+const initSelectedStatus = (goods, skuId) => {
+  const sku = goods.skus.find(sku => sku.id === skuId)
+  if (sku) {
+    goods.specs.forEach((spec, i) => {
+      const value = sku.specs[i].valueName
+      spec.values.forEach(val => {
+        val.selected = val.name === value
+      })
+    })
+  }
+}
 export default {
   name: 'GoodsSku',
   props: {
     goods: {
       type: Object,
       default: () => ({})
+    },
+    skuID: {
+      type: String,
+      default: ''
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
     const pathMap = getPathMap(props.goods.skus)
+
+    // 根据skuID初始化选中
+    initSelectedStatus(props.goods, props.skuId)
 
     // 组件初始化:更新按钮禁用状态
     updateDisabledStatus(props.goods.specs, pathMap)
@@ -110,7 +129,24 @@ export default {
         val.selected = true
       }
       // 点击按钮时,更新按钮禁用状态
-      getSelectedValues(props.goods.specs)
+      updateDisabledStatus(props.goods.specs, pathMap)
+      // 将你选择的信息通知父组件 {skuID, price, oldPrice, inventory, specsText}
+      // 1.选择完整的sku组合按钮, 才能拿到这些信息, 提交父组件
+      // 2.不是完整的sku组合按钮, 提交空对象父组件
+      const ValidselectedValues = getSelectedValues(props.goods.specs)
+      if (ValidselectedValues.length === props.goods.specs.length) {
+        const skuIds = pathMap[ValidselectedValues.join(star)]
+        const sku = props.goods.skus.find(sku => sku.id === skuIds[0])
+        emit('change', {
+          skuId: sku.id,
+          price: sku.price,
+          oldPrice: sku.oldPrice,
+          inventory: sku.inventory,
+          specsText: sku.specs.reduce((p, n) => `${p} ${n.name}:${n.valueName}`, '').replace(' ', '')
+        })
+      } else {
+        emit('change', {})
+      }
     }
     return { changeSku }
   }
