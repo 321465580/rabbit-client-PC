@@ -18,10 +18,12 @@
             <GoodsName :goods="goods" />
             <!-- sku规格组件 -->
             <GoodsSku :goods="goods" :skuID="3678188" @change="changeSku"/>
+            <XtxNumbox label="数量" v-model="num" :max="goods.inventory"/>
+            <XtxButton type="primary" style="margin-top:20px;">加入购物车</XtxButton>
         </div>
       </div>
       <!-- 商品推荐 -->
-      <GoodsRelevant />
+      <GoodsRelevant :goodsId="goods.id"/>
       <!-- 商品详情 -->
       <div class="goods-footer">
         <div class="goods-article">
@@ -46,6 +48,7 @@ import GoodsName from './components/goods-name'
 import GoodsSku from './components/goods-sku'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
+import XtxNumbox from '@/components/library/xtx-numbox.vue'
 export default {
   name: 'XtxGoodsPage',
   components: {
@@ -53,7 +56,8 @@ export default {
     GoodsImage,
     GoodsSales,
     GoodsName,
-    GoodsSku
+    GoodsSku,
+    XtxNumbox
   },
   setup () {
     // 1.获取商品详情,去渲染面包屑
@@ -66,7 +70,10 @@ export default {
         goods.value.inventory = sku.inventory
       }
     }
-    return { goods, changeSku }
+
+    // 选择的数量
+    const num = ref(1)
+    return { goods, changeSku, num }
   }
 }
 // 获取商品详情

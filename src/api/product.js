@@ -9,3 +9,13 @@ import request from '@/utils/request'
 export const findGoods = (id) => {
   return request('/goods', 'get', { id })
 }
+
+/**
+ *  获取推荐商品 ||猜你喜欢
+ * @param {String} id 商品ID 传入相关推荐,不传猜你喜欢
+ * @param {Integer} limit 商品数量
+ * @returns
+ */
+export const findRelGoods = ({ id, limit = 16 }) => {
+  return request('/goods/relevant', 'get', { id, limit })
+}
