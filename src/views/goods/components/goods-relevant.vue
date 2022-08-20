@@ -35,7 +35,7 @@ export default {
       for (let i = 0; i < pageTotal; i++) {
         sliders.value.push(data.result.slice(i * pageSize, (i + 1) * pageSize))
       }
-      console.log(sliders)
+      // console.log(sliders)
     })
     return { sliders }
   }
