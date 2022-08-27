@@ -30,3 +30,14 @@ export const findRelGoods = ({ id, limit = 16 }) => {
 export const findGoodsHot = ({ id, limit = 3, type = 1 }) => {
   return request('/goods/hot', 'get', { id, limit, type })
 }
+
+/**
+ * 查询商品评价信息
+ * @param {string} id 商品ID
+ * @returns
+ */
+export const findGoodsCommentInfo = (id) => {
+  // return request(`'/goods/${id}/evaluate'`, 'get')
+  // axios 遇到http https 开头的地址不会加上基准地址
+  return request(`https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate`, 'get')
+}
