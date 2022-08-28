@@ -17,6 +17,8 @@ import defaultImg from '@/assets/images/200.png'
 // 通过文件路径数组，通过遍历数组，再使用 importFn 根据路径导入组件对象
 // 遍历的同时进行全局注册即可
 
+import Message from './Message'
+
 // context有三个参数 1.目录名称 2.是否加载子目录 3.加载的正则匹配
 const importFn = require.context('./', false, /\.vue$/)
 
@@ -40,6 +42,9 @@ export default {
 
     // 定义指令
     defineDirective(app)
+
+    // 定义一个原型函数
+    app.config.globalProperties.$message = Message
   }
 }
 
