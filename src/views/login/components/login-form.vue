@@ -65,7 +65,9 @@
       <a @click="login" href="javascript:;" class="btn">登录</a>
     </VeeForm>
     <div class="action">
+      <a href="https://graph.qq.com/oauth2.0/authorize?client_id=100556005&response_type=token&scope=all&redirect_uri=http%3A%2F%2Fwww.corho.com%3A8080%2F%23%2Flogin%2Fcallback">
       <img src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png" alt="">
+      </a>
       <div class="url">
         <a href="javascript:;">忘记密码</a>
         <a href="javascript:;">免费注册</a>
@@ -83,6 +85,7 @@ import { userAccountLogin, userMobileLogin, userMobileLoginMsg } from '@/api/use
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { useIntervalFn } from '@vueuse/shared'
+// import QC from 'qc'
 export default {
   name: 'LoginForm',
   components: {
@@ -229,6 +232,13 @@ export default {
         formC.value.setFieldError('mobile', valid)
       }
     }
+
+    // 初始化QQ登录按钮(官方)
+    // 1.装备span 带id = qqLoginBtn
+    // 2.QC.Login({ btnId: 'qqLoginBtn' })
+    // onMounted(() => {
+    //   QC.Login({ btnId: 'qqLoginBtn' })
+    // })
 
     return { isMsgLogin, form, schema: mySchema, formC, login, send, time }
   }
