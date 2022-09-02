@@ -18,10 +18,10 @@
       </a>
     </nav>
     <div class="tab-content" v-if="hasAccount">
-      <CallbackBind :nickname="nickname" :avatar="avatar" />
+      <CallbackBind :nickname="nickname" :avatar="avatar" :unionID="unionID" />
     </div>
     <div class="tab-content" v-else>
-      <CallbackPatch />
+      <CallbackPatch :unionID="unionID" />
     </div>
   </section>
     <LoginFooter />
@@ -50,6 +50,7 @@ export default {
     const hasAccount = ref(false)
     const store = useStore()
     const router = useRouter()
+    const unionID = ref(null)
     // 首先: 默认认为已经注册且绑定
     // 通过QQ的API获取openID 就是后台需要的unionID然后进行登录
     // 如果成功: 登录成功
@@ -59,6 +60,7 @@ export default {
     if (QC.Login.check()) {
       // 第三方的唯一标识
       QC.Login.getMe((openID) => {
+        unionID.value = openID
         // 请求小兔鲜后台, 做QQ登陆
         userQQLogin(openID).then(data => {
           // 登录成功 data.result 用户信息
@@ -76,7 +78,7 @@ export default {
       })
     }
 
-    return { hasAccount, isBind }
+    return { hasAccount, isBind, unionID }
   }
 }
 </script>

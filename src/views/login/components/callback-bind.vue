@@ -1,8 +1,8 @@
 <template>
   <div class="xtx-form">
     <div class="user-info">
-      <img src="http://qzapp.qlogo.cn/qzapp/101941968/57C7969540F9D3532451374AA127EE5B/50" alt="" />
-      <p>Hi，Tom 欢迎来小兔鲜，完成绑定后可以QQ账号一键登录哦~</p>
+      <img :src="avatar" alt="" />
+      <p>Hi，{{nickname}} 欢迎来小兔鲜，完成绑定后可以QQ账号一键登录哦~</p>
     </div>
     <div class="xtx-form-item">
       <div class="field">
@@ -24,8 +24,31 @@
 </template>
 
 <script>
+import QC from 'qc'
+import { ref } from 'vue-demi'
 export default {
-  name: 'CallbackBind'
+  name: 'CallbackBind',
+  props: {
+    unionID: {
+      type: String,
+      default: ''
+    }
+  },
+  setup () {
+    const nickname = ref('null')
+    const avatar = ref('null')
+    // 1.准备信息: openID(unionID) QQ头像和昵称
+    // 2.完成表单校验
+    // 3.发送验证码(校验, 定义api, 调用, 完成倒计时)
+    // 4.进行绑定(绑定成功就是登录成功)
+    if (QC.Login.check()) {
+      QC.api('get_user_info').success(res => {
+        nickname.value = res.data.nickname
+        avatar.value = res.data.figureurl_1
+      })
+    }
+    return { nickname, avatar }
+  }
 }
 </script>
 
