@@ -18,7 +18,7 @@
       </a>
     </nav>
     <div class="tab-content" v-if="hasAccount">
-      <CallbackBind :nickname="nickname" :avatar="avatar" :unionID="unionID" />
+      <CallbackBind :unionID="unionID" />
     </div>
     <div class="tab-content" v-else>
       <CallbackPatch :unionID="unionID" />

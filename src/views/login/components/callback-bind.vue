@@ -1,5 +1,5 @@
 <template>
-  <div class="xtx-form">
+  <Form ref="formC" :validation-schema="Myschema" v-slot="{errors}" autocomplete="off" class="xtx-form">
     <div class="user-info">
       <img :src="avatar" alt="" />
       <p>Hi，{{nickname}} 欢迎来小兔鲜，完成绑定后可以QQ账号一键登录哦~</p>
@@ -7,34 +7,45 @@
     <div class="xtx-form-item">
       <div class="field">
         <i class="icon iconfont icon-phone"></i>
-        <input class="input" type="text" placeholder="绑定的手机号" />
+        <Field :class="{err:errors.mobile}" v-model="form.mobile" name="mobile" class="input" type="text" placeholder="绑定的手机号" />
       </div>
-      <div class="error"></div>
+      <div v-if="errors.mobile" class="error">{{errors.mobile}}</div>
     </div>
     <div class="xtx-form-item">
       <div class="field">
         <i class="icon iconfont icon-code"></i>
-        <input class="input" type="text" placeholder="短信验证码" />
-        <span class="code">发送验证码</span>
+        <Field :class="{err:errors.code}" v-model="form.code" name="code" class="input" type="text" placeholder="短信验证码" />
+        <span class="code" @click="send()" >{{time===0?'发送验证码':`${time}秒后发送`}}</span>
       </div>
-      <div class="error"></div>
+      <div v-if="errors.code" class="error">{{errors.code}}</div>
     </div>
-    <a href="javascript:;" class="submit">立即绑定</a>
-  </div>
+    <a href="javascript:;" class="submit" @click="submit()">立即绑定</a>
+  </Form>
 </template>
 
 <script>
 import QC from 'qc'
-import { ref } from 'vue-demi'
+import { reactive, ref, onMounted } from 'vue'
+import { Form, Field } from 'vee-validate'
+import schema from '@/utils/vee-validate-schema'
+import { userQQBindCode, userQQBindLogin } from '@/api/user'
+import { useIntervalFn } from '@vueuse/core'
+import Message from '@/components/library/Message'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 export default {
   name: 'CallbackBind',
+  components: {
+    Form,
+    Field
+  },
   props: {
     unionID: {
       type: String,
       default: ''
     }
   },
-  setup () {
+  setup (props) {
     const nickname = ref('null')
     const avatar = ref('null')
     // 1.准备信息: openID(unionID) QQ头像和昵称
@@ -47,7 +58,82 @@ export default {
         avatar.value = res.data.figureurl_1
       })
     }
-    return { nickname, avatar }
+
+    // 校验数据对象
+    const form = reactive({
+      mobile: null,
+      code: null
+    })
+    // 校验规则对象
+    const Myschema = {
+      mobile: schema.mobile,
+      code: schema.code
+    }
+
+    // 发送短信验证码
+    // 手机号登录
+    // 1.发送验证码
+    // 1.1 绑定发送验证码按钮点击事件
+    // 1.2 校验手机号, 成功才能发送验证码(API), 开启60s倒计时, 不能再次点击, 60s后回复原样
+    // 1.3 失败, 失败的校验样式显示出来
+    const time = ref(0)
+    const formC = ref(null)
+    // pause 暂停
+    // resume 开始
+    // useIntervalFn(回调函数,执行间隔, 是否开启)
+    // const time = ref(0)
+    const { pause, resume } = useIntervalFn(() => {
+      time.value--
+      if (time.value <= 0) {
+        pause()
+      }
+    }, 1000, { immediate: false })
+    onMounted(() => {
+      pause()
+    })
+
+    // 发送短信
+    const send = async () => {
+      const valid = Myschema.mobile(form.mobile)
+      if (valid === true) {
+        // 通过
+        if (time.value === 0) {
+          await userQQBindCode(form.mobile)
+          Message({ type: 'success', text: '发送成功' })
+          time.value = 60
+          resume()
+        }
+      } else {
+        // 失败, 使用vee的错误函数, 显示错误信息 setFieldError(字段, 错误信息)
+        formC.value.setFieldError('mobile', valid)
+      }
+    }
+
+    const store = useStore()
+    const router = useRouter()
+    // 立即绑定
+    const submit = async () => {
+      const valid = formC.value.validate()
+      if (valid) {
+        await userQQBindLogin({
+          unionID: props.unionID,
+          ...form
+        }).then(data => {
+          // 实现和之前登录一样的逻辑
+          // 1.存储用户信息
+          const { id, account, avatar, mobile, nickname, token } = data.result
+          store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
+          // 2.跳转到来源页或者首页
+          router.push(store.state.user.redirectUrl)
+          // 3.成功提示
+          Message({ type: 'success', text: 'QQ绑定成功' })
+        }).catch(e => {
+          Message({ type: 'error', text: '绑定失败' })
+        })
+      }
+    }
+
+    return { nickname, avatar, form, Myschema, send, time, formC, submit }
   }
 }
 </script>
