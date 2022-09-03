@@ -60,3 +60,34 @@ export const userQQBindCode = (mobile) => {
 export const userQQBindLogin = ({ unionId, mobile, code }) => {
   return request('/login/social/bind', 'post', { unionId, mobile, code })
 }
+
+/**
+ * 校验用户名是否唯一
+ * @param {String} account 账号
+ * @returns Promise
+ */
+export const userAccountCheck = (account) => {
+  return request('/register/check', 'get', { account })
+}
+
+/**
+ * 获取QQ完善信息的时候 短信验证码
+ * @param {String} mobile 手机号
+ * @returns
+ */
+export const userQQPatchCode = (mobile) => {
+  return request('/register/code', 'get', { mobile })
+}
+
+/**
+ * QQ注册 完善信息
+ * @param {String} unionId qq唯一标识
+ * @param {String} mobile 手机号
+ * @param {String} code 验证码
+ * @param {String} account 账号
+ * @param {String} password 密码
+ * @returns
+ */
+export const userQQPatchLogin = ({ unionId, mobile, code, account, password }) => {
+  return request('/login/social:unionID/complement', 'post', { unionId, mobile, code, account, password })
+}
