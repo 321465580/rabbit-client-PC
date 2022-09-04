@@ -19,7 +19,7 @@
             <!-- sku规格组件 -->
             <GoodsSku :goods="goods" :skuID="3678188" @change="changeSku"/>
             <XtxNumbox label="数量" v-model="num" :max="goods.inventory"/>
-            <XtxButton type="primary" style="margin-top:20px;">加入购物车</XtxButton>
+            <XtxButton @click="insertCart()" type="primary" style="margin-top:20px;">加入购物车</XtxButton>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -57,6 +57,8 @@ import GoodsWarn from './components/goods-warn'
 import { findGoods } from '@/api/product'
 import { useRoute } from 'vue-router'
 import XtxNumbox from '@/components/library/xtx-numbox.vue'
+import { useStore } from 'vuex'
+import Message from '@/components/library/Message'
 export default {
   name: 'XtxGoodsPage',
   components: {
@@ -80,6 +82,8 @@ export default {
         goods.value.oldPrice = sku.oldPrice
         goods.value.inventory = sku.inventory
       }
+      // 记录选择后的sku 可能有数据 可能无数据
+      currSku.value = sku
     }
 
     // 提供goods数据给后台组件使用
@@ -87,7 +91,34 @@ export default {
 
     // 选择的数量
     const num = ref(1)
-    return { goods, changeSku, num }
+    // 加入购物车
+    const store = useStore()
+    const currSku = ref(null)
+    const insertCart = () => {
+    // 约定加入购物车字段 必须和后端保持一致
+    // id skuId name attrsText picture price nowPrice selected stock count isEffective
+      if (currSku.value && currSku.value.skuId) {
+        const { skuId, specsText: attrsText, inventory: stock } = currSku.value
+        const { id, name, mainPictures, price } = goods.value
+        store.dispatch('cart/insertCart', {
+          skuId,
+          attrsText,
+          stock,
+          id,
+          name,
+          price,
+          picture: mainPictures,
+          selected: true,
+          count: num.value,
+          isEffective: true
+        }).then(() => {
+          Message({ type: 'success', text: '添加购物车成功' })
+        })
+      } else {
+        Message({ text: '请选择完整的规格' })
+      }
+    }
+    return { goods, changeSku, num, insertCart }
   }
 }
 // 获取商品详情
@@ -106,6 +137,7 @@ const useGoods = () => {
       })
     }
   }, { immediate: true })
+
   return goods
 }
 </script>

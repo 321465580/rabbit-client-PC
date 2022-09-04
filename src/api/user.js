@@ -89,5 +89,5 @@ export const userQQPatchCode = (mobile) => {
  * @returns
  */
 export const userQQPatchLogin = ({ unionId, mobile, code, account, password }) => {
-  return request('/login/social:unionID/complement', 'post', { unionId, mobile, code, account, password })
+  return request('/login/social/:unionId/complement', 'post', { unionId, mobile, code, account, password })
 }

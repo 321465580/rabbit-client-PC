@@ -124,7 +124,7 @@ export default {
     const submit = async () => {
       const valid = formC.value.validate()
       if (valid) {
-        await userQQPatchLogin({
+        userQQPatchLogin({
           unionID: props.unionID,
           ...form
         }).then(data => {
